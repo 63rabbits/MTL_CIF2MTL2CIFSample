@@ -79,6 +79,7 @@ class ViewController: UIViewController, MTKViewDelegate {
                                         height: texture.height,
                                         mipmapped: false)
         midTextureDescriptor.usage = [ .renderTarget, .shaderRead, .shaderWrite ]
+        midTextureDescriptor.storageMode = .private
         midTexture01 = device.makeTexture(descriptor: midTextureDescriptor)
         midTexture02 = device.makeTexture(descriptor: midTextureDescriptor)
     }
@@ -136,9 +137,9 @@ class ViewController: UIViewController, MTKViewDelegate {
         guard let renderEncoder01 = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor01) else {return}
         guard let renderPipeline01 = renderPipeline01 else {fatalError()}
         renderEncoder01.setRenderPipelineState(renderPipeline01)
-        renderEncoder01.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
-        renderEncoder01.setVertexBuffer(texCoordBuffer, offset: 0, index: 1)
-        renderEncoder01.setFragmentTexture(midTexture01, index: 0)
+        renderEncoder01.setVertexBuffer(vertexBuffer, offset: 0, index: kVATindex_Pos)
+        renderEncoder01.setVertexBuffer(texCoordBuffer, offset: 0, index: kVATindex_TexCoord)
+        renderEncoder01.setFragmentTexture(midTexture01, index: kFATindex_Texture)
         renderEncoder01.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         renderEncoder01.endEncoding()
 
@@ -155,9 +156,9 @@ class ViewController: UIViewController, MTKViewDelegate {
         guard let renderEncoder02 = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor02) else {return}
         guard let renderPipeline02 = renderPipeline02 else {fatalError()}
         renderEncoder02.setRenderPipelineState(renderPipeline02)
-        renderEncoder02.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
-        renderEncoder02.setVertexBuffer(texCoordBuffer, offset: 0, index: 1)
-        renderEncoder02.setFragmentTexture(midTexture01, index: 0)
+        renderEncoder02.setVertexBuffer(vertexBuffer, offset: 0, index: kVATindex_Pos)
+        renderEncoder02.setVertexBuffer(texCoordBuffer, offset: 0, index: kVATindex_TexCoord)
+        renderEncoder02.setFragmentTexture(midTexture01, index: kFATindex_Texture)
         renderEncoder02.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         renderEncoder02.endEncoding()
 

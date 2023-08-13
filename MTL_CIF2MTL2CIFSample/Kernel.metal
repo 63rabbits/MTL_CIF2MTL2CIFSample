@@ -6,6 +6,7 @@
 //
 
 #include <metal_stdlib>
+#include "MetalShader.h"
 using namespace metal;
 
 struct ShaderIO {
@@ -15,9 +16,10 @@ struct ShaderIO {
 
 
 
-vertex ShaderIO vertexThrough(constant float4 *positions  [[ buffer(0) ]],
-                              constant float2 *texCoords  [[ buffer(1) ]],
-                              uint            vid         [[ vertex_id ]]) {
+vertex ShaderIO vertexThrough(constant float4 *positions  [[ buffer(kVATindex_Pos) ]],
+                              constant float2 *texCoords  [[ buffer(kVATindex_TexCoord) ]],
+                              uint            vid         [[ vertex_id ]]
+                              ) {
     ShaderIO out;
     out.position = positions[vid];
     out.texCoords = texCoords[vid];
@@ -27,19 +29,22 @@ vertex ShaderIO vertexThrough(constant float4 *positions  [[ buffer(0) ]],
 
 
 fragment float4 fragmentThrough(ShaderIO          in      [[ stage_in ]],
-                                texture2d<float>  texture [[ texture(0) ]]) {
+                                texture2d<float>  texture [[ texture(kFATindex_Texture) ]]
+                                ) {
     constexpr sampler colorSampler;
     return texture.sample(colorSampler, in.texCoords);
 }
 
 fragment float4 fragmentColorShift(ShaderIO           in      [[ stage_in ]],
-                                   texture2d<float>   texture [[ texture(0) ]]) {
+                                   texture2d<float>   texture [[ texture(kFATindex_Texture) ]]
+                                   ) {
     constexpr sampler colorSampler;
     return texture.sample(colorSampler, in.texCoords).gbra;
 }
 
 fragment float4 fragmentTurnOver(ShaderIO           in      [[ stage_in ]],
-                                 texture2d<float>   texture [[ texture(0) ]]) {
+                                 texture2d<float>   texture [[ texture(kFATindex_Texture) ]]
+                                 ) {
     constexpr sampler colorSampler;
     float x = 1.0 - in.texCoords.x;
     float y = in.texCoords.y;
@@ -49,7 +54,8 @@ fragment float4 fragmentTurnOver(ShaderIO           in      [[ stage_in ]],
 constant float3 grayWeight = float3(0.298912, 0.586611, 0.114478);
 
 fragment float4 fragmentGrayscale(ShaderIO          in      [[ stage_in ]],
-                                  texture2d<float>  texture [[ texture(0) ]]) {
+                                  texture2d<float>  texture [[ texture(kFATindex_Texture) ]]
+                                  ) {
     constexpr sampler colorSampler;
     float4 color = texture.sample(colorSampler, in.texCoords);
     float  gray  = dot(color.rgb, grayWeight);
